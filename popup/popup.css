@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.popup-container {
+    width: 300px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 15px 0 10px;
+}
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.script-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.script-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0f0f0;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.script-details {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.script-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.script-type {
+    font-size: 12px;
+    color: #777;
+}
+
+.script-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btn img {
+    width: 16px;
+    height: 16px;
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonly - JavaScript Injector</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="./icons/moon128.png" type="image/x-icon">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Script Manager</h1>
+            <div class="button-group">
+                <button id="addScriptBtn" class="primary-btn">+ Add New Script</button>
+                <button id="uploadScriptBtn" class="primary-btn">Upload Script</button>
+                <input type="file" id="uploadScriptInput" accept="application/json" style="display: none;">
+            </div>
+        </header>
+        <main>
+            <section id="scriptsSection" class="scripts-section">
+                <p id="emptyMessage" class="empty-message">No scripts added yet.</p>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Creating a New Script -->
+    <div id="createScriptModal" class="modal hidden">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Create Script</h2>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </header>
+            <form id="scriptForm" class="form">
+                <label for="scriptName">Name:</label>
+                <input type="text" id="scriptName" required>
+
+                <label for="scriptCode">Code:</label>
+                <textarea id="scriptCode" required></textarea>
+
+                <label for="runCondition">Run Script If:</label>
+                <select id="runCondition">
+                    <option value="url">URL</option>
+                </select>
+                <div class="condition-group">
+                    <select id="matchType">
+                        <option value="equals">Equals</option>
+                        <option value="contains">Contains</option>
+                        <option value="regex">Matches Regex</option>
+                    </select>
+                    <input type="text" id="conditionKey" required>
+                </div>
+                <div id="automaticOptions" class="hidden">
+                    <select id="injectTiming" class="inject-select">
+                        <option value="onLoad">On Page Load</option>
+                        <option value="beforeLoad">Before Page Load</option>
+                    </select>
+                </div>
+                <div class="trigger-group">
+                    <button id="manualTrigger" class="trigger-btn active">Manually</button>
+                    <button id="automaticTrigger" class="trigger-btn">Automatically</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="script_manager.js"></script>
+</body>
+
+</html>

@@ -1,2 +1,2 @@
-# js-injector-chrome-ext
+# Moonly - JavaScript Injector
 Simple JavaScript Injector for google chrome browser. 
