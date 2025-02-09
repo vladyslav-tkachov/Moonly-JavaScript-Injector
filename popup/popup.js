@@ -2,14 +2,14 @@ document.getElementById("openScriptManager").addEventListener("click", () => {
     chrome.runtime.openOptionsPage();
 });
 
+// Retrieve applicable scripts for the current page
 function getApplicableScripts(currentUrl, scripts) {
     return scripts.filter((script) => {
         if (script.matchType === "equals" && currentUrl === script.conditionKey) return true;
         if (script.matchType === "contains" && currentUrl.includes(script.conditionKey)) return true;
         if (script.matchType === "regex") {
             try {
-                const regex = new RegExp(script.conditionKey);
-                return regex.test(currentUrl);
+                return new RegExp(script.conditionKey).test(currentUrl);
             } catch (error) {
                 console.error("Invalid regex:", error);
             }
@@ -18,16 +18,13 @@ function getApplicableScripts(currentUrl, scripts) {
     });
 }
 
+// Render applicable scripts in the popup
 function renderScripts(scripts) {
     const scriptList = document.getElementById("scriptList");
     scriptList.innerHTML = "";
 
     if (scripts.length === 0) {
-        const emptyMessage = document.createElement("div");
-        emptyMessage.textContent = "No applicable scripts.";
-        emptyMessage.style.textAlign = "center";
-        emptyMessage.style.color = "#666";
-        scriptList.appendChild(emptyMessage);
+        scriptList.innerHTML = "<div class='no-scripts'>No applicable scripts.</div>";
         return;
     }
 
@@ -38,9 +35,9 @@ function renderScripts(scripts) {
         const detailsDiv = document.createElement("div");
         detailsDiv.className = "script-details";
         detailsDiv.innerHTML = `
-      <div class="script-title">${script.name}</div>
-      <div class="script-type">${script.trigger === "manual" ? "Manual" : "Automatic"}</div>
-    `;
+            <div class="script-title">${script.name}</div>
+            <div class="script-type">${script.trigger === "manual" ? "Manual" : "Automatic"}</div>
+        `;
 
         const actionsDiv = document.createElement("div");
         actionsDiv.className = "script-actions";
@@ -50,10 +47,7 @@ function renderScripts(scripts) {
             playButton.className = "action-btn";
             playButton.innerHTML = `<img src="../icons/play128.png" alt="Play">`;
             playButton.addEventListener("click", () => {
-                chrome.scripting.executeScript({
-                    target: { allFrames: true },
-                    func: new Function(script.code),
-                });
+                executeManualScript(script.code);
             });
             actionsDiv.appendChild(playButton);
         }
@@ -63,11 +57,28 @@ function renderScripts(scripts) {
     });
 }
 
+// Execute manual scripts from popup
+function executeManualScript(scriptCode) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length === 0) return;
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            world: "MAIN",
+            func: (code) => eval(code),
+            args: [scriptCode],
+        }).then(() => {
+            console.log("Manual script executed successfully.");
+        }).catch((error) => {
+            console.error("Manual script execution failed:", error);
+        });
+    });
+}
+
+// Detect current page and load applicable scripts
 chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
     const currentUrl = tab.url;
     chrome.storage.local.get("scripts", (result) => {
-        const allScripts = result.scripts || [];
-        const applicableScripts = getApplicableScripts(currentUrl, allScripts);
+        const applicableScripts = getApplicableScripts(currentUrl, result.scripts || []);
         renderScripts(applicableScripts);
     });
 });

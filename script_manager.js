@@ -9,11 +9,138 @@ const scriptForm = document.getElementById("scriptForm");
 const manualTrigger = document.getElementById("manualTrigger");
 const automaticTrigger = document.getElementById("automaticTrigger");
 const injectTiming = document.getElementById("injectTiming");
+const scriptCodeTextarea = document.getElementById("scriptCode");
 
-let scripts = JSON.parse(localStorage.getItem("scripts")) || [];
+let scripts = [];
 let editingScriptIndex = null;
+let codeEditor;
 
-// Render Scripts
+document.addEventListener("DOMContentLoaded", () => {
+    initializeCodeMirror();
+    loadScripts();
+
+    manualTrigger.addEventListener("click", () => {
+        manualTrigger.classList.add("active");
+        automaticTrigger.classList.remove("active");
+        injectTiming.classList.add("hidden");
+
+        if (editingScriptIndex !== null) {
+            scripts[editingScriptIndex].trigger = "manual";
+            scripts[editingScriptIndex].autoTiming = null;
+            saveScripts();
+        }
+    });
+
+    automaticTrigger.addEventListener("click", () => {
+        automaticTrigger.classList.add("active");
+        manualTrigger.classList.remove("active");
+        injectTiming.classList.remove("hidden");
+
+        if (editingScriptIndex !== null) {
+            scripts[editingScriptIndex].trigger = "automatic";
+            scripts[editingScriptIndex].autoTiming = injectTiming.value;
+            saveScripts();
+        }
+    });
+
+    addScriptBtn.addEventListener("click", () => {
+        scriptForm.reset();
+        editingScriptIndex = null;
+        codeEditor.setValue("");
+        setTimeout(() => codeEditor.refresh(), 0);
+        createScriptModal.classList.remove("hidden");
+    });
+
+    closeModal.addEventListener("click", () => {
+        createScriptModal.classList.add("hidden");
+    });
+
+    scriptForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const newScript = {
+            name: document.getElementById("scriptName").value.trim(),
+            code: codeEditor.getValue().trim(),
+            runCondition: document.getElementById("runCondition").value,
+            matchType: document.getElementById("matchType").value,
+            conditionKey: document.getElementById("conditionKey").value.trim(),
+            trigger: manualTrigger.classList.contains("active") ? "manual" : "automatic",
+            autoTiming: automaticTrigger.classList.contains("active") ? injectTiming.value : null,
+            enabled: true,
+        };
+
+        if (!newScript.name || !newScript.code) {
+            alert("All required fields must be filled! Script name and code are required.");
+            return;
+        }
+
+        if (editingScriptIndex !== null) {
+            scripts[editingScriptIndex] = newScript;
+        } else {
+            scripts.push(newScript);
+        }
+
+        saveScripts();
+        renderScripts();
+        createScriptModal.classList.add("hidden");
+    });
+
+    uploadScriptBtn.addEventListener("click", () => {
+        uploadScriptInput.click();
+    });
+
+    uploadScriptInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const uploadedScript = JSON.parse(e.target.result);
+                    if (uploadedScript.name && uploadedScript.code && uploadedScript.runCondition && uploadedScript.matchType && uploadedScript.conditionKey) {
+                        scripts.push(uploadedScript);
+                        saveScripts();
+                        renderScripts();
+                    } else {
+                        alert("Invalid script file.");
+                    }
+                } catch (error) {
+                    console.error("Error parsing uploaded script:", error);
+                    alert("Failed to upload script.");
+                }
+            };
+            reader.readAsText(file);
+        }
+    });
+});
+
+function initializeCodeMirror() {
+    if (!codeEditor) {
+        codeEditor = CodeMirror.fromTextArea(scriptCodeTextarea, {
+            mode: "javascript",
+            theme: "paraiso-light",
+            lineNumbers: true,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            tabSize: 2,
+        });
+        codeEditor.setSize("100%", "300px");
+        codeEditor.refresh();
+    }
+}
+
+function loadScripts() {
+    chrome.storage.local.get("scripts", (result) => {
+        scripts = result.scripts || [];
+        renderScripts();
+    });
+}
+
+function saveScripts() {
+    chrome.storage.local.set({ scripts }, () => {
+        console.log("Scripts saved successfully.");
+    });
+}
+
 function renderScripts() {
     scriptsSection.innerHTML = "";
 
@@ -66,7 +193,6 @@ function renderScripts() {
     }
 }
 
-// Download Script
 function downloadScript(script) {
     const scriptBlob = new Blob([JSON.stringify(script, null, 2)], { type: "application/json" });
     const scriptUrl = URL.createObjectURL(scriptBlob);
@@ -79,83 +205,11 @@ function downloadScript(script) {
     URL.revokeObjectURL(scriptUrl);
 }
 
-// Upload Script
-uploadScriptBtn.addEventListener("click", () => {
-    uploadScriptInput.click();
-});
-
-uploadScriptInput.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const uploadedScript = JSON.parse(e.target.result);
-                if (uploadedScript.name && uploadedScript.code && uploadedScript.runCondition && uploadedScript.matchType && uploadedScript.conditionKey) {
-                    scripts.push(uploadedScript);
-                    saveScripts();
-                    renderScripts();
-                    alert("Script uploaded successfully!");
-                } else {
-                    alert("Invalid script file.");
-                }
-            } catch (error) {
-                console.error("Error parsing uploaded script:", error);
-                alert("Failed to upload script.");
-            }
-        };
-        reader.readAsText(file);
-    }
-});
-
-// Open and Close Modal
-addScriptBtn.addEventListener("click", () => {
-    scriptForm.reset();
-    editingScriptIndex = null;
-    injectTiming.classList.add("hidden");
-    createScriptModal.classList.remove("hidden");
-});
-
-closeModal.addEventListener("click", () => createScriptModal.classList.add("hidden"));
-
-// Handle Form Submission
-scriptForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const newScript = {
-        name: document.getElementById("scriptName").value.trim(),
-        code: document.getElementById("scriptCode").value.trim(),
-        runCondition: document.getElementById("runCondition").value,
-        matchType: document.getElementById("matchType").value,
-        conditionKey: document.getElementById("conditionKey").value.trim(),
-        trigger: manualTrigger.classList.contains("active") ? "manual" : "automatic",
-        autoTiming: automaticTrigger.classList.contains("active") ? injectTiming.value : null,
-        enabled: true,
-    };
-
-    if (!newScript.name || !newScript.code || !newScript.conditionKey) {
-        alert("All required fields must be filled!");
-        return;
-    }
-
-    if (editingScriptIndex !== null) {
-        scripts[editingScriptIndex] = newScript;
-    } else {
-        scripts.push(newScript);
-    }
-
-    saveScripts();
-    renderScripts();
-    createScriptModal.classList.add("hidden");
-});
-
-// Open Edit Modal
 function openEditModal(index) {
     editingScriptIndex = index;
     const script = scripts[index];
 
     document.getElementById("scriptName").value = script.name;
-    document.getElementById("scriptCode").value = script.code;
     document.getElementById("runCondition").value = script.runCondition;
     document.getElementById("matchType").value = script.matchType;
     document.getElementById("conditionKey").value = script.conditionKey;
@@ -171,58 +225,16 @@ function openEditModal(index) {
         injectTiming.value = script.autoTiming;
     }
 
+    codeEditor.setValue(script.code);
     createScriptModal.classList.remove("hidden");
+    codeEditor.setOption("mode", "javascript");
+    codeEditor.refresh();
 }
-
-// Save Scripts
-function saveScripts() {
-    localStorage.setItem("scripts", JSON.stringify(scripts));
-    chrome.storage.local.set({ scripts });
-}
-
-// Trigger Toggle Logic
-manualTrigger.addEventListener("click", () => {
-    manualTrigger.classList.add("active");
-    automaticTrigger.classList.remove("active");
-    injectTiming.classList.add("hidden");
-    saveNewScript("manual");
-});
-
-automaticTrigger.addEventListener("click", () => {
-    automaticTrigger.classList.add("active");
-    manualTrigger.classList.remove("active");
-    injectTiming.classList.remove("hidden");
-    saveNewScript("automatic");
-});
-
-// Save New Script on Trigger Change
-function saveNewScript(triggerType) {
-    const newScript = {
-        name: document.getElementById("scriptName").value.trim(),
-        code: document.getElementById("scriptCode").value.trim(),
-        runCondition: document.getElementById("runCondition").value,
-        matchType: document.getElementById("matchType").value,
-        conditionKey: document.getElementById("conditionKey").value.trim(),
-        trigger: triggerType,
-        autoTiming: triggerType === "automatic" ? injectTiming.value : null,
-        enabled: true,
-    };
-
-    if (!newScript.name || !newScript.code || !newScript.conditionKey) {
-        return; // Don't save incomplete scripts
-    }
-
-    if (editingScriptIndex !== null) {
-        scripts[editingScriptIndex] = newScript;
-    } else {
-        scripts.push(newScript);
-    }
-
-    saveScripts();
-    renderScripts();
-}
-
-// Initial Render
 document.addEventListener("DOMContentLoaded", () => {
-    renderScripts();
+    if (!scriptCodeTextarea) {
+        console.error("Textarea for CodeMirror not found.");
+        return;
+    }
+    initializeCodeMirror();
 });
+

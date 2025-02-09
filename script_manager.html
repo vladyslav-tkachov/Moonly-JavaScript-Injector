@@ -7,6 +7,11 @@
     <title>Moonly - JavaScript Injector</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" href="./icons/moon128.png" type="image/x-icon">
+    <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="libs/codemirror/theme/paraiso-light.css">
+
+    <script src="libs/codemirror/lib/codemirror.js"></script>
+    <script src="libs/codemirror/mode/javascript/javascript.js"></script>
 </head>
 
 <body>
@@ -25,7 +30,6 @@
             </section>
         </main>
     </div>
-
     <!-- Modal for Creating a New Script -->
     <div id="createScriptModal" class="modal hidden">
         <div class="modal-content">
@@ -38,7 +42,7 @@
                 <input type="text" id="scriptName" required>
 
                 <label for="scriptCode">Code:</label>
-                <textarea id="scriptCode" required></textarea>
+                <textarea id="scriptCode"></textarea>
 
                 <label for="runCondition">Run Script If:</label>
                 <select id="runCondition">
@@ -50,7 +54,7 @@
                         <option value="contains">Contains</option>
                         <option value="regex">Matches Regex</option>
                     </select>
-                    <input type="text" id="conditionKey" required>
+                    <input type="text" id="conditionKey" placeholder="Leave empty to match any URL">
                 </div>
                 <div id="automaticOptions" class="hidden">
                     <select id="injectTiming" class="inject-select">
@@ -65,7 +69,7 @@
             </form>
         </div>
     </div>
-    <script src="script_manager.js"></script>
+    <script src="./script_manager.js"></script>
 </body>
 
 </html>

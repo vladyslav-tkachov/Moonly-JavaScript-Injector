@@ -30,7 +30,7 @@ h1 {
 }
 
 .primary-btn {
-    background-color: #007bff;
+    background-color: #38b2ac;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -41,7 +41,7 @@ h1 {
 }
 
 .primary-btn:hover {
-    background-color: #0056b3;
+    background-color: #287f7a;
 }
 
 .scripts-section {
@@ -86,7 +86,7 @@ h1 {
 .edit-btn,
 .action-btn {
     background: none;
-    border: 1px solid #007bff;
+    border: 1px solid #38b2ac;
     padding: 5px 8px;
     border-radius: 5px;
     font-size: 13px;
@@ -97,7 +97,7 @@ h1 {
 .toggle-btn:hover,
 .edit-btn:hover,
 .action-btn:hover {
-    background-color: #007bff;
+    background-color: #38b2ac;
     color: white;
 }
 
@@ -122,11 +122,37 @@ h1 {
     background: white;
     border-radius: 10px;
     padding: 20px;
-    width: 500px;
-    max-width: 90%;
+    max-width: 800px;
+    width: 90%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+}
+
+.CodeMirror {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #282c34;
+    /* Darcula background color */
+    color: #ffffff;
+    /* Syntax text color */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.CodeMirror-focused {
+    outline: 2px solid #38b2ac;
+}
+
+.CodeMirror-scroll {
+    height: auto;
+    /* Allow the editor to resize with content */
+    max-height: 300px;
+    /* Set max height if needed */
+    overflow-y: auto;
 }
 
 .modal-header {
@@ -204,24 +230,24 @@ textarea {
 }
 
 .trigger-btn {
-    border: 1px solid #007bff;
+    border: 1px solid #38b2ac;
     padding: 8px 12px;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
     background: white;
-    color: #007bff;
+    color: #38b2ac;
     transition: background 0.3s, color 0.3s;
 }
 
 .trigger-btn.active {
-    background: #007bff;
+    background: #38b2ac;
     color: white;
     font-weight: bold;
 }
 
 .trigger-btn:hover {
-    background: #0056b3;
+    background: #287f7a;
     color: white;
 }
 
@@ -234,12 +260,12 @@ textarea {
 }
 
 .inject-select:focus {
-    border-color: #007bff;
+    border-color: #38b2ac;
     outline: none;
 }
 
 .save-btn {
-    background-color: #007bff;
+    background-color: #38b2ac;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -252,8 +278,8 @@ textarea {
 }
 
 .save-btn:hover {
-    background-color: #0056b3;
-} 
+    background-color: #287f7a;
+}
 
 @media (max-width: 600px) {
     .modal-content {

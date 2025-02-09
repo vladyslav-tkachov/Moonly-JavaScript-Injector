@@ -33,7 +33,7 @@ body {
 .btn-primary {
     display: block;
     width: 100%;
-    background-color: #007bff;
+    background-color: #38b2ac;
     color: white;
     border: none;
     border-radius: 5px;
@@ -45,7 +45,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #287f7a;
 }
 
 .script-list {
