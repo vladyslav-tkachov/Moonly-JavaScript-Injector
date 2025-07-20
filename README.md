@@ -14,6 +14,10 @@ Moonly is a simple Chrome extension that lets you inject JavaScript into web pag
 
 ## **How to Use**
 
+Install from [Chrome Web Store](https://chromewebstore.google.com/detail/moonly-javascript-injecto/ojifbchickiodflpjdgpafeljoiifkpn?pli=1) 
+
+OR
+
 1. Clone this repository:
    ```bash
    git clone https://github.com/yourusername/moonly-js-injector.git
